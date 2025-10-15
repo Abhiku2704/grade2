@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Exam Grader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 0px auto;
+            padding: 0px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .question-info {
+            flex: 1;
+        }
+        .question-input {
+            width: 80px;
+            padding: 5px;
+            text-align: center;
+        }
+        .total {
+            text-align: center;
+            margin: 5px 0;
+            padding: 15px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 5px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .max-marks {
+            font-size: 12px;
+            color: #666;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="questions">
+            <!-- Questions will be added here by JavaScript -->
+        </div>
+        
+        <div class="total">
+            Total: <span id="total">0</span> / 100
+        </div>
+        
+        <button onclick="resetAll()">Reset All</button>
+    </div>
+
+    <script>
+        const questions = [
+            { id: 1, max: 20 },
+            { id: 2, max: 20 },
+            { id: 3, max: 20 },
+            { id: 4, max: 20 },
+            { id: 5, max: 20 }
+        ];
+
+        // Create question inputs
+        function createQuestions() {
+            const container = document.getElementById('questions');
+            
+            questions.forEach(q => {
+                const div = document.createElement('div');
+                div.className = 'question';
+                div.innerHTML = `
+                    <div class="question-info">
+                        Question ${q.id} <span class="max-marks">(max: ${q.max})</span>
+                    </div>
+                    <input type="number" class="question-input" id="q${q.id}" 
+                           min="0" max="${q.max}" step="0.5" 
+                           oninput="updateTotal()">
+                    <div class="error" id="error${q.id}">Max is ${q.max}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Update total marks
+        function updateTotal() {
+            let total = 0;
+            let hasError = false;
+            
+            questions.forEach(q => {
+                const input = document.getElementById(`q${q.id}`);
+                const error = document.getElementById(`error${q.id}`);
+                const value = parseFloat(input.value) || 0;
+                
+                if (value > q.max) {
+                    error.style.display = 'block';
+                    input.style.borderColor = 'red';
+                    hasError = true;
+                } else {
+                    error.style.display = 'none';
+                    input.style.borderColor = '';
+                    total += value;
+                }
+            });
+            
+            if (!hasError) {
+                document.getElementById('total').textContent = total;
+            }
+        }
+
+        // Reset all inputs
+        function resetAll() {
+            questions.forEach(q => {
+                const input = document.getElementById(`q${q.id}`);
+                const error = document.getElementById(`error${q.id}`);
+                input.value = '';
+                error.style.display = 'none';
+                input.style.borderColor = '';
+            });
+            document.getElementById('total').textContent = '0';
+        }
+
+        // Initialize the app
+        createQuestions();
+    </script>
+</body>
+</html>
